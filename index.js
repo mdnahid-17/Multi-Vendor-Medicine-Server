@@ -11,7 +11,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = 5000;
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://server-pearl-iota-83.vercel.app","https://simple-firebase-form-b6244.web.app"],
+  origin: ["http://localhost:5173", "https://server-pearl-iota-83.vercel.app", "https://simple-firebase-form-b6244.web.app"],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -67,7 +67,11 @@ const sendEmail = (emailAddress, emailData) => {
     }
   });
 };
-
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
 // Verify Token Middleware
 const verifyToken = async (req, res, next) => {
   const token = req.cookies?.token;
@@ -125,22 +129,15 @@ async function run() {
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "365d",
       });
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-        })
-        .send({ success: true });
+      res.cookie("token", token, cookieOptions).send({ success: true });
     });
     // Logout
     app.get("/logout", async (req, res) => {
       try {
         res
           .clearCookie("token", {
+            ...cookieOptions,
             maxAge: 0,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
           })
           .send({ success: true });
       } catch (err) {
