@@ -11,7 +11,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = 5000;
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "https://server-pearl-iota-83.vercel.app","https://simple-firebase-form-b6244.web.app"],
   credentials: true,
   optionSuccessStatus: 200,
 };
